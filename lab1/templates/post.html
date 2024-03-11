@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-3 w-75">
+
+    <!-- Блок с заголовком поста -->
+    <div class="mb-3">
+        <h2 class="mb-0">{{post.title}}</h2>
+        <p class="text-muted">{{post.author}}, {{post.date.strftime("%d.%m.%Y")}}</p>
+    </div>
+
+    <!-- Изображение поста -->
+    <div class="mb-4 w-75 mx-auto">
+        <img src="{{ url_for('static', filename='images/' + post.image_id) }}" class="img-fluid rounded">
+    </div>
+
+    <!-- Содержимое поста -->
+    <div class="mb-4">
+        <p class="fs-6">
+            {{post.text}}
+        </p>
+    </div>
+
+    <!-- Блок "оставьте комментарий" -->
+    <div class="mt-3">
+        <h3 class="mb-0">Оставьте комментарий</h3>
+        <div class="my-3">
+            <textarea class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </div>
+
+    {% for comment in post.comments %}
+    <div class="container my-5">
+        <!-- Основной комментарий -->
+        <div class="d-flex align-items-start mb-3">
+            <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle flex-shrink-0" style="width: 3rem; height: 3rem;">
+            <div class="flex-grow-1 ms-3">
+                <h6>{{comment.author}}</h6>
+                <p>{{comment.text}}</p>
+            </div>
+        </div>
+
+        {% for subcomment in comment.replies %}
+        <!-- Ответы на комментарий -->
+        <div class="d-flex align-items-start mb-3">
+            <div class="ms-5 me-3">
+                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle flex-shrink-0" style="width: 3rem; height: 3rem;">
+            </div>
+            <div class="flex-grow-1">
+                <h6>{{subcomment.author}}</h6>
+                <p>{{subcomment.text}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
