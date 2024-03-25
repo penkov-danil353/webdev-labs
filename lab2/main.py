@@ -60,10 +60,12 @@ def calc():
 
 
 def validate_phone_number(phone):
+    if not phone.startswith(('+7', '8')):
+        return False, "Недопустимый ввод. Номер телефона должен начинаться с +7 или 8."
     clean = re.sub(pattern=r'[+\s().\-]', repl='', string=phone)
     if not clean.isdigit():
         return False, "Недопустимый ввод. В номере телефона встречаются недопустимые символы."
-    if len(clean) not in [10, 11]:
+    if (phone.startswith('+7') and len(clean) != 11) or (phone.startswith('8') and len(clean) != 10):
         return False, "Недопустимый ввод. Неверное количество цифр."
 
     return True, None
