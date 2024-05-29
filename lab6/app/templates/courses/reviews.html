@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% from 'pagination.html' import render_pagination %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <section class="reviews mb-5">
+        <h2 class="mb-3 text-center text-uppercase font-weight-bold">Отзывы</h2>
+
+        <div class="text-center mb-4">
+            <a href="{{ url_for(request.endpoint, course_id=search_params['course_id'], sort='newest') }}" class="btn btn-outline-secondary {{ 'active' if search_params['sort'] == 'newest' else '' }}">По новизне</a>
+            <a href="{{ url_for(request.endpoint, course_id=search_params['course_id'], sort='positive') }}" class="btn btn-outline-secondary {{ 'active' if search_params['sort'] == 'positive' else '' }}">Сначала положительные</a>
+            <a href="{{ url_for(request.endpoint, course_id=search_params['course_id'], sort='negative') }}" class="btn btn-outline-secondary {{ 'active' if search_params['sort'] == 'negative' else '' }}">Сначала отрицательные</a>
+        </div>
+
+
+        {% for review in reviews %}
+        <div class="card mb-4 shadow border-right d-flex flex-column" style="max-width: 66%; margin: 0 auto;">
+            <div class="d-flex flex-row no-gutters">
+                <div class="bg-light p-4" style="flex: 0 0 25%;">
+                    <h5 class="mb-1">{{ review.get_user_name() }}</h5>
+                    <small>{{ review.created_at.strftime('%d.%m.%Y') }}</small>
+                </div>
+                <div style="flex: 1 1 auto;">
+                    <div class="card-body d-flex flex-column" style="padding: 1em 1em 10px 1em;">
+                        <p class="card-text mb-2 align-self-start">
+                            Оценка:
+                            {% for i in range(1, 6) %}
+                                <span class="star">{{ '★' if i <= review.rating else '☆' }}</span>
+                            {% endfor %}
+                        </p>
+                        <p class="card-text align-self-start">{{ review.text }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="mb-5">
+            {{ render_pagination(pagination, request.endpoint, search_params) }}
+        </div>
+
+    {% if current_user.is_authenticated %}
+        </section>
+            <section class="comment-form mb-5">
+            <h3 class="mb-3 text-center">Оставьте ваш отзыв</h3>
+            <form action="{{ url_for('courses.create_review', course_id=course.id) }}" method="post" class="p-3 rounded shadow" style="max-width: 66%; margin: 0 auto;">
+
+                <div class="form-group mb-4">
+                    <label for="reviewRating" class="mb-2">Оценка:</label>
+
+                    <select class="form-control" id="reviewRating" name="rating" required {{ 'disabled' if user_review }}>
+                        {% for score, description in scores.items() %}
+                            <option value="{{ score }}" {{ 'selected' if score == rating }}> {{ description }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="reviewText" class="mb-2">Текст отзыва:</label>
+                    <textarea class="form-control" id="reviewText" name="text" rows="3" required
+                              placeholder="Ваш комментарий..."
+                              {{ 'disabled' if user_review}}>{{ user_review.text if user_review}}</textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" {{ 'disabled' if user_review }}>Оставить отзыв</button>
+                </div>
+
+            </form>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}
