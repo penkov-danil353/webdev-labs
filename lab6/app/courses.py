@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
-from lab6.app import tools
+import tools
 from models import db, Course, Category, User, Review
 from tools import CoursesFilter, ImageSaver, ReviewsFilter
 
